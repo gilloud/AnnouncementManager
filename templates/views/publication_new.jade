@@ -1,0 +1,155 @@
+extends ../layouts/default
+include ../mixins/display-announce
+
+
+block css
+	link(href="/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen")
+	script(type="text/javascript" src="/js/publication_new.js")
+
+block js
+	script(type="text/javascript" src="/js/lib/momentjs/moment.js" charset="UTF-8")
+	script(type="text/javascript" src="/js/lib/bootstrap/transition.js" charset="UTF-8")
+	script(type="text/javascript" src="/js/lib/bootstrap/collapse.js" charset="UTF-8")
+	script(type="text/javascript" src="/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js" charset="UTF-8")
+
+	script(type="text/javascript").
+		var v_debut = '#{data.publication.debut}';
+		var v_fin 	= '#{data.publication.fin}';
+
+		var configDate = {language: 'fr',pickTime: false};
+		$('#finform').datetimepicker(configDate);
+		$('#debutform').datetimepicker(configDate);
+
+		var isstart = true;
+		if(isstart)
+		{
+			var defstart = moment().day(7);
+			defstart.set('hour',20);
+			defstart.set('minute',30);
+			defstart.set('second', 0);
+			var defend = moment().day(6+7);
+			defend.set('hour',20);
+			defend.set('minute',30);
+			defend.set('second', 0);
+
+			$('#debutform').data("DateTimePicker").setDate(defstart);
+			$('#debut').val($('#debutform').data("DateTimePicker").getDate());
+			$('#finform').data("DateTimePicker").setDate(defend);
+			$('#fin').val($('#finform').data("DateTimePicker").getDate());
+
+			isstart = false;
+			
+		}
+		if(v_debut !== '')
+		{
+			v_debut_date = new Date(v_debut);
+			$('#debutform').data("DateTimePicker").setDate(v_debut_date);
+			$('#debut').val($('#debutform').data("DateTimePicker").getDate());
+
+		}
+		if(v_fin !== '')
+		{
+			v_fin_date = new Date(v_fin);
+			$('#finform').data("DateTimePicker").setDate(v_fin_date);
+			$('#fin').val($('#finform').data("DateTimePicker").getDate());
+
+		}
+
+		//Ajout
+		$("#debutform").on("dp.change",function (ef) {
+			var newenddate = moment(ef.date).add(6,'days');
+			$('#finform').data("DateTimePicker").setMinDate(ef.date);
+			$('#finform').data("DateTimePicker").setDate(newenddate);
+
+			$('#debut').val($('#debutform').data("DateTimePicker").getDate());
+		});
+
+		//mise dans la variable cachée des infos
+		$("#finform").on("dp.change",function (ef) {
+
+		$('#fin').val($('#finform').data("DateTimePicker").getDate());
+		});
+
+
+block content
+	.container: .row
+		.col-sm-12.col-md-12
+			form.form-horizontal(method='post')
+				fieldset
+					//Form Name 
+					if data.publication.id
+						legend Mettre à jour une publication
+					else
+						legend Créer une publication
+
+
+					//Text input
+					.form-group#debutformgroup
+						label.col-md-4.control-label(for='debutform') Début
+						.col-md-4
+							#debutform.input-group.date(data-link-field='debutform')
+								input.form-control(type='text')
+								span.input-group-addon
+									span.glyphicon-calendar.glyphicon
+							input#debut(type='hidden' name='debut')
+
+
+					.form-group#finformgroup
+						label.col-md-4.control-label(for='finform') Fin
+						.col-md-4
+							#finform.input-group.date(data-link-field='finform')
+								input.form-control(type='text')
+								span.input-group-addon
+									span.glyphicon-calendar.glyphicon
+							input#fin(type='hidden' name='fin')
+
+					//Textarea 
+					.form-group
+						label.col-md-4.control-label(for='description') Description
+						.col-md-4
+							textarea#description.form-control(name='description' placeholder='Détail de la publication (optionnel)' style="height:200px; width:600px")= data.publication.description
+					
+
+					//Button 
+					.form-group
+						label.col-md-4.control-label
+						.col-md-8
+							button#submitbtn.btn.btn-success(name='submit') 
+								span.glyphicon.glyphicon-floppy-disk 
+								|  Sauvegarder
+					if data.publication.id
+						input#id(type='hidden', value=data.publication.id, name='id')
+
+					if data.publication.id
+						h3 Annonces comprises dans le mail :
+						div(class="alert alert-info" role="alert"): p Les annonces ci-dessous sont les annonces d'informations pas encore envoyées à l'église ainsi que les évènements de la vie de l'église situés dans la période.
+							br 
+							p A la génération de la publication, tous les éléments ont été sélectionnés. S'il en apparait d'autre, c'est qu'ils ont été soumis après.
+						ul.list-group
+							each announce in data.announces
+								li.list-group-item
+									div(id='a_#{announce.id}' style="")
+										span.glyphicon.glyphicon-tag &nbsp;
+										span #{announce.categorie.name}
+										br
+										+display-announce(announce,announce.categorie)
+										span(class="glyphicon glyphicon-user")
+										i: span  #{announce.author.getFullName} | 
+										span.glyphicon.glyphicon-share-alt 
+										a(href='/announce/#{announce.id}') 
+											span Aller a l'annonce
+										a(href="javascript:addremove('add','#{data.publication.id}','#{announce.id}')" id='link_add_#{announce.id}')
+											span(class="badge pull-right")
+												span(class="glyphicon glyphicon-ok")
+										a(href="javascript:addremove('remove','#{data.publication.id}','#{announce.id}')" id='link_remove_#{announce.id}' style="display:none")
+											span(class="badge pull-right")
+												span(class="glyphicon glyphicon-remove")
+										script(type="text/javascript").
+											setDefaultValue('#{announce.id}',#{announce.associated});
+
+
+			if user.isAdmin
+				hr
+				p #{data.announce}
+
+

@@ -1,0 +1,74 @@
+extends ../layouts/default
+block js
+	script(type="text/javascript" src="/js/publications.js")
+
+block content
+	.container: .row
+		.col-sm-12.col-md-12
+			h2 Publications en cours et autres publications effectuées
+			if data.nonsentpublications.length == 0
+				center
+					a(href='/publication/new')
+						button.btn.btn-primary Créer une publication
+			if data.nonsentpublications.length > 0
+				h3 Publications non-envoyées
+				br
+				ul.list-group
+					each publication in data.nonsentpublications
+						li.list-group-item 
+							b &nbsp;
+								| Du #{publication._.debut.format('DD/MM/YYYY')} au #{publication._.fin.format('DD/MM/YYYY')} 
+							p!= publication.description
+							a(href='/publication/#{publication.id}') 
+								button.btn.btn-success
+									span.glyphicon.glyphicon-pencil 
+									|  Modifier la publication
+							a(href='/mail/#{publication.id}/display') 
+								button.btn.btn-success
+									span.glyphicon.glyphicon-search
+									|  Visualiser le mail
+							button.btn.btn-warning(onclick="javascript:sendmail('#{publication.id}','test',#{publication.sent});return false;")
+								span.glyphicon.glyphicon-cog
+								|  Envoyer un e-mail de test
+							button.btn.btn-danger(onclick="javascript:sendmail('#{publication.id}','prod',#{publication.sent});return false;")
+								span.glyphicon.glyphicon-bullhorn
+								|  Envoyer à l'église
+				//Si pas encore créée, aller sur l'écran de création pré-rempli, sinon aller sur la publication déjà créée.
+				// Par défault une publication commence le Dimanche suivant et s'arrête le samedi d'après.
+				
+			br
+			h3 Historique des publications de l'année écoulée
+			ul.list-group
+				each publication in data.publications
+					li.list-group-item 
+						b: a(href='/publication/#{publication.id}') 
+							| Du #{publication._.debut.format('DD/MM/YYYY')} au #{publication._.fin.format('DD/MM/YYYY')} 
+						p!= publication.description
+						button(type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal") Modifier
+						#myModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+							.modal-dialog
+									.modal-content
+										.modal-header
+											button.close(type='button', data-dismiss='modal')
+												span(aria-hidden='true') ×
+												span.sr-only Close
+											h4#myModalLabel.modal-title Modifier ou envoyer à nouveal
+										.modal-body
+											p Du #{publication._.debut.format('DD/MM/YYYY')} au #{publication._.fin.format('DD/MM/YYYY')} 
+											a(href='/publication/#{publication.id}') 
+												button.btn.btn-success
+													span.glyphicon.glyphicon-pencil 
+													|  Modifier la publication
+											a(href='/mail/#{publication.id}/display') 
+												button.btn.btn-success
+													span.glyphicon.glyphicon-search
+													|  Visualiser le mail
+											br
+											br
+											button.btn.btn-warning(onclick="javascript:sendmail('#{publication.id}','test',#{publication.sent});return false;")
+												span.glyphicon.glyphicon-cog
+												|  Envoyer un e-mail de test
+											button.btn.btn-danger(onclick="javascript:sendmail('#{publication.id}','prod',#{publication.sent});return false;")
+												span.glyphicon.glyphicon-bullhorn
+												|  Envoyer à l'église
+

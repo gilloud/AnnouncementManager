@@ -1,0 +1,71 @@
+extends ../layouts/default
+
+mixin post(post)
+	.post
+		h2: a(href='/announce/' + post.id)= post.title
+		p!= post.description
+		p.lead.text-muted Evenement prévu 
+			if post.debut
+				| pour le #{post._.debut.format('LLLL')} 
+			if post.categorie 
+				| publié dans #{post.categorie.name} 
+			if post.author
+				| par #{post.author.name.first}
+		hr
+		//if post.image.exists
+		//	img(src=post._.image.fit(160,160)).img.pull-right
+		//p!= post.content.brief
+		//if post.content.extended
+		//	p.read-more: a(href='/blog/post/' + post.slug) Read more...
+
+block intro
+	.container
+		h1= data.category ? data.category.name : 'Toutes les annonces actives'
+		div(class="alert alert-info" role="alert"): p Affiche les annonces que vous avez crées ainsi que les annonces que vous pouvez modifier.
+block content
+	.container: .row
+		.col-sm-8.col-md-9
+			if filters.category && !data.category
+				h3.text-muted Catégorie invalide.
+			else
+				if data.posts.results.length
+					if data.posts.totalPages > 1
+						h4.text-weight-normal Affiche de 
+							strong #{data.posts.first}
+							|  à 
+							strong #{data.posts.last}
+							|  des 
+							strong #{data.posts.total}
+							|  annonces.
+					else
+						h4.text-weight-normal Affiche #{utils.plural(data.posts.results.length, '* annonce')}.
+					.blog
+						each post in data.posts.results
+							+post(post)
+					
+					if data.posts.totalPages > 1
+						ul.pagination
+							if data.posts.previous
+								li: a(href='?page=' + data.posts.previous): span.glyphicon.glyphicon-chevron-left
+							else
+								li.disabled: a(href='?page=' + 1): span.glyphicon.glyphicon-chevron-left
+							each p, i in data.posts.pages
+								li(class=data.posts.currentPage == p ? 'active' : null)
+									a(href='?page=' + (p == '...' ? (i ? data.posts.totalPages : 1) : p ))= p
+							if data.posts.next
+								li: a(href='?page=' + data.posts.next): span.glyphicon.glyphicon-chevron-right
+							else
+								li.disabled: a(href='?page=' + data.posts.totalPages): span.entypo.glyphicon.glyphicon-chevron-right
+				else
+					if data.category
+						h3.text-muted Il n'y a pas d'annonces dans la catégorie #{data.category.name}.
+					else
+						h3.text-muted Il n'y a pas d'annonces
+		
+		if data.categories.length
+			.col-sm-4.col-md-3
+				h2 Catégories
+				.list-group(style='margin-top: 70px;')
+					a(href='/announces', class=!data.category ? 'active' : false).list-group-item Toutes les annonces actives
+					each cat in data.categories
+						a(href='/announces/' + cat.key, class=data.category && data.category.id == cat.id ? 'active' : false).list-group-item= cat.name

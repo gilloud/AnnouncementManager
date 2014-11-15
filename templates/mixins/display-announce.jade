@@ -1,0 +1,35 @@
+mixin display-announce(announce,categorie)
+	if categorie.date_display_mode === 'anniversaire'
+		p #{announce.title} a son anniversaire le #{announce._.debut.format('DD/MM')}
+	else if  categorie.date_display_mode === 'none'
+		p #{announce.description}
+	else if  categorie.date_display_mode === 'menage'
+		p Le ménage est à faire pour le #{announce._.debut.format('DD/MM')} par #{announce.title}
+	else
+		if announce.title !== ''
+			b #{announce.title}
+		if announce.pubtype === 'event'
+			case categorie.date_display_mode
+				when 'dateheure'
+					if announce._.debut.format('DD/MM') === announce._.fin.format('DD/MM')
+						ul
+							li Le #{announce._.debut.format('DD/MM')} de #{announce._.debut.format('HH:mm')} à #{announce._.debut.format('HH:mm')}
+					else
+						ul
+							li Du #{announce._.debut.format('DD/MM HH:mm')}
+							li Au #{announce._.fin.format('DD/MM HH:mm')}
+				when 'date'
+					if announce._.debut.format('DD/MM') === announce._.fin.format('DD/MM')
+						ul
+							li Le #{announce._.debut.format('DD/MM')}
+					else
+						ul
+							li Du #{announce._.debut.format('DD/MM')}
+							li Au #{announce._.fin.format('DD/MM')}
+				when 'pourle'
+					ul
+						li Le #{announce._.debut.format('DD/MM')}
+		//		when 'none' // for 'none', nothing to do !
+		if announce.description !== ''
+			p!= announce.description.replace(/\n?\r\n/g, '<br />' )
+			br

@@ -1,0 +1,193 @@
+extends ../layouts/default
+
+block css
+	link(href="/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen")
+
+block js
+	script(type="text/javascript" src="/js/lib/momentjs/moment.js" charset="UTF-8")
+	script(type="text/javascript" src="/js/lib/bootstrap/transition.js" charset="UTF-8")
+	script(type="text/javascript" src="/js/lib/bootstrap/collapse.js" charset="UTF-8")
+	script(type="text/javascript" src="/js/lib/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js" charset="UTF-8")
+
+	script(type="text/javascript").
+		var v_debut = '#{data.announce.debut}';
+		var v_fin 	= '#{data.announce.fin}';
+		var v_pubtype = '#{data.announce.pubtype}';
+
+		var configDate = {language: 'fr',minuteStepping:15};
+		$('#finform').datetimepicker(configDate);
+		$('#debutform').datetimepicker(configDate);
+
+		var isstart = true;
+		if(isstart)
+		{
+			var defstart = moment();
+			defstart.set('hour',20);
+			defstart.set('minute',30);
+			defstart.set('second', 0);
+			$('#debutform').data("DateTimePicker").setDate(defstart);
+
+			isstart = false;
+			
+		}
+		if(v_debut !== '')
+		{
+			v_debut_date = new Date(v_debut);
+			$('#debutform').data("DateTimePicker").setDate(v_debut_date);
+			$('#debut').val($('#debutform').data("DateTimePicker").getDate());
+		}
+		if(v_fin !== '')
+		{
+			v_fin_date = new Date(v_fin);
+			$('#finform').data("DateTimePicker").setDate(v_fin_date);
+			$('#fin').val($('#finform').data("DateTimePicker").getDate());
+
+		}
+
+		//Ajout
+		$("#debutform").on("dp.change",function (ef) {
+			var newenddate = moment(ef.date).add(2,'hours');
+			$('#finform').data("DateTimePicker").setMinDate(ef.date);
+			$('#finform').data("DateTimePicker").setDate(newenddate);
+
+			$('#debut').val($('#debutform').data("DateTimePicker").getDate());
+		});
+
+		//mise dans la variable cachée des infos
+		$("#finform").on("dp.change",function (ef) {
+
+		$('#fin').val($('#finform').data("DateTimePicker").getDate());
+		});
+
+		displayDependancy = function(d)
+		{
+			if(d === 'event')
+			{
+				$("#debutformgroup").show();
+				$("#finformgroup").show();
+				$("#nbWeekBeforeEventgroup").show();
+			}
+
+			if(d === 'announce')
+			{
+				$("#debutformgroup").hide();
+				$("#finformgroup").hide();
+				$("#nbWeekBeforeEventgroup").hide();
+			
+			}
+		};
+		
+		// Dépendance d'affichage
+		$("input[type=radio][name=pubtype]").change(function(){
+			displayDependancy(this.value);
+		});
+		displayDependancy(v_pubtype||'event');
+		if(v_pubtype === '')
+		{
+			$("#event").prop( "checked", true );
+		}
+
+// Si pas de date soumise, alors l'évènement soumis n'est 
+block content
+	.container: .row
+		.col-sm-12.col-md-12
+			form.form-horizontal(method='post')
+				fieldset
+					//Form Name 
+					legend Soumettre une annonce
+					//Text input
+					.form-group
+						label.col-md-4.control-label(for='title') Titre de l'annonce
+						.col-md-4
+							input#title.form-control.input-md(name='title', placeholder='Indiquez ici le titre de votre annonce', required='', type='text' value=data.announce.title) 
+							span.help-block Par exemple : Nouvelles des petits messagers
+					//Textarea 
+					.form-group
+						label.col-md-4.control-label(for='description') Description
+						.col-md-4
+							textarea#description.form-control(name='description' placeholder='Détail de l\'annonce' style="height:200px; width:600px")= data.announce.description
+					
+					//Select Basic 
+					.form-group
+						label.col-md-4.control-label(for='categorie') Catégorie
+						.col-md-4
+							select#categorie.form-control(name='categorie')
+								each category in data.AMCategory
+									if category.for_all || user.isAdminAnnounceManager
+										option(value='#{category._id}' selected=data.announce.categorie == category.id) #{category.name}
+											if category.description
+												|  (#{category.description})
+					//Select Basic 
+					.form-group
+						label.col-md-4.control-label(for='pubtype') Type de publication
+						.col-md-4
+							.radio
+								label(for='event')
+									input#event(type='radio', checked=data.announce.pubtype == 'event', value='event', name='pubtype')
+									| Evènement (Réunion fixée à une date/heure précise)
+							.radio
+								label(for='announce')
+									input#announce(type='radio', checked=data.announce.pubtype == 'announce', value='announce', name='pubtype')
+									| Information
+
+
+					//Text input
+					.form-group#debutformgroup
+						label.col-md-4.control-label(for='debutform') Début
+						.col-md-4
+							#debutform.input-group.date(data-link-field='debutform')
+								input.form-control(type='text')
+								span.input-group-addon
+									span.glyphicon-calendar.glyphicon
+							input#debut(type='hidden' name='debut')
+
+
+					.form-group#finformgroup
+						label.col-md-4.control-label(for='finform') Fin
+						.col-md-4
+							#finform.input-group.date(data-link-field='finform')
+								input.form-control(type='text')
+								span.input-group-addon
+									span.glyphicon-calendar.glyphicon
+							input#fin(type='hidden' name='fin')
+
+					
+					.form-group#nbWeekBeforeEventgroup
+						label.col-md-4.control-label(for='nbWeekBeforeEvent') Nombre de semaine de publication avant l'évènement
+						.col-md-4
+							select#nbWeekBeforeEvent.form-control(name='nbWeekBeforeEvent')
+								each week in data.nbWeekBeforeEvent
+									option(value='#{week.key}' selected=data.announce.nbWeekBeforeEvent == week.key) #{week.value}
+									
+					//Button 
+					.form-group
+						label.col-md-4.control-label(for='submit')
+						.col-md-4
+							button#submitbtn.btn.btn-success(name='submit') 
+								span.glyphicon.glyphicon-bullhorn &nbsp;
+								span Soumettre
+
+					if data.announce.id
+						.form-group
+							label.col-md-4.control-label(for='title') Soumis par
+							.col-md-4
+								p.form-control= data.announce.author.getFullName
+						input#id(type='hidden', value=data.announce.id, name='id')
+
+						if data.publications.length > 0
+							.form-group
+								label.col-md-4.control-label(for='nbWeekBeforeEvent') Publié dans les e-mails couvrant les périodes
+								.col-md-8
+									ul
+										each publication in data.publications
+											li du #{publication.publication._.debut.format('DD/MM/YYYY')} au #{publication.publication._.fin.format('DD/MM/YYYY')}
+						else
+							hr
+							.form-group
+								label.col-md-8.control-label(for='nbWeekBeforeEvent') Annonce pas encore publiée
+
+			if user.isAdmin
+				hr
+				p #{data.announce}
+
+
