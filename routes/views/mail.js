@@ -68,7 +68,7 @@ exports = module.exports = function(req, res) {
 	});
 
 	view.on('init',function(next){
-		keystone.list('AMAnnounce').model.find().where({'_id': {$in : locals.data.announces_id}}).sort('-debut').populate('author').exec(function(err,result){
+		keystone.list('AMAnnounce').model.find().where({'_id': {$in : locals.data.announces_id}}).sort('-pubtype debut').populate('author').exec(function(err,result){
 
 			locals.data.announces = result;
 			next();
