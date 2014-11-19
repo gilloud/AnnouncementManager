@@ -21,7 +21,6 @@ exports = module.exports = function(req, res) {
 		announces_id : [],
 		publicationannounce : [],
 		categorie_id : [],
-		shouldDisplay : {},
 		httpPrefix : {}
 	};
 
@@ -31,9 +30,13 @@ exports = module.exports = function(req, res) {
 		auth: {
 			user: process.env.MAIL_USER,
 			pass: process.env.MAIL_PASSWORD
-		}
-	}));
+		
+		},
+    secureConnection: false ,
+    debug:true
+	 }));
 
+	console.log(process.env);
 	if(process.env.NODE_ENV === 'production')
 	{
 		locals.data.httpPrefix = 'http://annonces.epe-drac.fr'
@@ -108,21 +111,28 @@ exports = module.exports = function(req, res) {
 	view.on('init',function(next){
 	if(locals.filters.sendmail === 'test')
 		{
-			//send mail à moi
+			//send mail Ã  moi
+			console.log('envoi de mail de test');
 				transporter.sendMail({
-				from: locals.user.name.first+' '+locals.user.name.last+' <louange@epe-drac.fr>',
+				from: locals.user.name.first+' '+locals.user.name.last+' <annonces@epe-drac.fr>',
 				to: 'gilles@pilloud.fr',
 				cc: locals.user.email+',gilles@pilloud.fr',
 				subject: 'Annonces de la période du '+locals.data.publication._.debut.format('DD/MM/YYYY')+' au '+locals.data.publication._.fin.format('DD/MM/YYYY'),
 				generateTextFromHTML: true,
 				html: locals.data.renderedMail
-			});
-			locals.shouldDisplay = false;
+			}, function(error, info){
+    if(error){
+        console.log(error);
+    }else{
+        console.log('Message sent: ' + info.response);
+    }
+});
+			locals.data.displayhtml = false;
 
 		}else if(locals.filters.sendmail === 'prod')
 		{
-			//send mail à tous
-			console.log('ici',locals.data.publication.id);
+			//send mail Ã  tous
+			console.log('envoi de mail de prod');
 			keystone.list('AMPublication').model.update({
 				'_id': locals.data.publication.id
 			}, {
@@ -131,13 +141,19 @@ exports = module.exports = function(req, res) {
 				console.log('ok',err,numAffected);
 			});
 			transporter.sendMail({
-				from: locals.user.name.first+' '+locals.user.name.last+' <louange@epe-drac.fr>',
+				from: locals.user.name.first+' '+locals.user.name.last+' <annonces@epe-drac.fr>',
 				to: 'gilles@pilloud.fr',
 				cc: locals.user.email+',gilles@pilloud.fr',
 				subject: 'Annonces de la période du '+locals.data.publication._.debut.format('DD/MM/YYYY')+' au '+locals.data.publication._.fin.format('DD/MM/YYYY'),
 				generateTextFromHTML: true,
 				html: locals.data.renderedMail
-			});
+			}, function(error, info){
+    if(error){
+        console.log(error);
+    }else{
+        console.log('Message sent: ' + info.response);
+    }
+});
 
 			for (var i = locals.data.announces.length - 1; i >= 0; i--) {
 				keystone.list('AMAnnounce').model.update({
@@ -147,41 +163,19 @@ exports = module.exports = function(req, res) {
 			}).exec(function(err, numAffected, c) {
 				console.log('ok',err,numAffected);
 			});
-			locals.shouldDisplay = false;
+			locals.data.displayhtml = false;
 		}
 
 
 		}else
 		{
-				locals.shouldDisplay = true;
+				locals.data.displayhtml = true;
 
 		}
+		console.log("displayhtml",locals.data.displayhtml);
 		next();
 	});
 
-/*
-
-	view.on('init', function(next){
-
-		view.render('sendmail', {}, function(err, html){
-			console.log('aaa',err,html);
-		});
-		next();
-
-	});
-	
-	// Render the view
-	if(locals.filters.sendmail === 'test')
-	{
-		view.render('sendmail');
-	}else if(locals.filters.sendmail === 'true')
-	{
-		view.render('sendmail');
-	}else
-	{
-		view.render('mail');
-	}
-	*/
 	view.render('sendmail');
 
 };

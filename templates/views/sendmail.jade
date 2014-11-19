@@ -1,18 +1,13 @@
-if data.shouldDisplay = false
-	|Le mail a bien été envoyé sur votre adresse #{user.email}
-else
-	extends ../layouts/default
-	block content
+if data.displayhtml
 		.container: .row
 			.col-sm-12.col-md-12
+				br
 				center
 					a(href='/publications/') 
-						button.btn.btn-success
-							span.glyphicon.glyphicon-chevron-left
-							|  Revenir aux publications
+						img(src="/images/back_to_publications.png")
 				div!= data.renderedMail
 				center
 					a(href='/publications/') 
-						button.btn.btn-success
-							span.glyphicon.glyphicon-chevron-left
-							|  Revenir aux publications
+						img(src="/images/back_to_publications.png")
+else
+	|Le mail a bien été envoyé sur votre adresse #{user.email}
