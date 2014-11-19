@@ -81,10 +81,10 @@ block js
 		$("input[type=radio][name=pubtype]").change(function(){
 			displayDependancy(this.value);
 		});
-		displayDependancy(v_pubtype||'event');
+		displayDependancy(v_pubtype||'announce');
 		if(v_pubtype === '')
 		{
-			$("#event").prop( "checked", true );
+			$("#announce").prop( "checked", true );
 		}
 
 // Si pas de date soumise, alors l'évènement soumis n'est 
@@ -122,13 +122,13 @@ block content
 						label.col-md-4.control-label(for='pubtype') Type de publication
 						.col-md-4
 							.radio
-								label(for='event')
-									input#event(type='radio', checked=data.announce.pubtype == 'event', value='event', name='pubtype')
-									| Evènement (Réunion fixée à une date/heure précise)
-							.radio
 								label(for='announce')
 									input#announce(type='radio', checked=data.announce.pubtype == 'announce', value='announce', name='pubtype')
 									| Information
+							.radio
+								label(for='event')
+									input#event(type='radio', checked=data.announce.pubtype == 'event', value='event', name='pubtype')
+									| Evènement (Réunion fixée à une date/heure précise)
 
 
 					//Text input
