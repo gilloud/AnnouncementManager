@@ -31,6 +31,7 @@ exports.initLocals = function(req, res, next) {
 		{ label: 'Soumettre une annonce',		key: 'soumettre',		href: '/announce/new' },
 		{ label: 'Mes annonces',		key: 'mesannonces',		href: '/announces/' },
 		{ label: 'Les publications',	keystoneadmin:true,	key: 'publications',		href: '/publications/' },
+		{ label: 'Mes informations',	key: 'me',		href: '/me/' },
 
 	];
 	
@@ -78,7 +79,7 @@ exports.requireUser = function(req, res, next) {
 
 exports.requireAdmin = function(req, res, next) {
 	console.log(req.user);
-	if (!(req.user.isAdmin || req.user.isAdminAnnounceManager)) {
+	if (!(req.user && (req.user.isAdmin || req.user.isAdminAnnounceManager))) {
 		req.flash('error', 'You must be administrator to access to this page.');
 		res.redirect('/');
 	} else {
