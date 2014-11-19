@@ -50,6 +50,7 @@ exports = module.exports = function(app) {
 	app.get('/mail/:publicationid/:sendmail',middleware.requireAdmin,routes.views.mail);
 	app.get('/sendmail/:publicationid/:sendmail',middleware.requireAdmin,routes.views.sendmail);
 	app.get('/publicationassoc/:action/:publicationid/:announceid',middleware.requireAdmin,routes.views.publicationassoc);
+    app.all('/me', routes.views.me);
 
 	// NOTE: To protect a route so that only admins can see it, use the requireUser middleware:
 	// app.get('/protected', middleware.requireUser, routes.views.protected);
