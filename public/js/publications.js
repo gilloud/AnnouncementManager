@@ -29,6 +29,9 @@ var sendmail = function(id, type, alreadysent) {
 	}
 	if (send) {
 		$.ajax({
+			dataType: 'text',
+			type: 'GET',
+			cache: false,
 			url: "/mail/" + id + "/" + type,
 			success: function(result) {
 				alert(result);
