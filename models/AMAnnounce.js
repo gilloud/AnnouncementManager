@@ -16,6 +16,7 @@ Announce.add({
 	description: { type: Types.Html, wysiwyg: true, height: 150 },
 	debut : {type: Types.Datetime,default: Date.now},
 	fin : {type: Types.Datetime},
+	nofin: { type: Boolean, label: 'Je ne connait pas l heure de fin', index: false ,default: false},
 	categorie: { type: Types.Relationship, ref: 'AMCategory', many: false },
 	author: { type: Types.Relationship, ref: 'User', index: true },
 	nbWeekBeforeEvent : { type: Types.Number, initial: true, required: false },

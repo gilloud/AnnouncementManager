@@ -13,6 +13,7 @@ block js
 		var v_debut = '#{data.announce.debut}';
 		var v_fin 	= '#{data.announce.fin}';
 		var v_pubtype = '#{data.announce.pubtype}';
+		var v_nofin = '#{data.announce.nofin}';
 
 		var configDate = {language: 'fr',minuteStepping:15};
 		$('#finform').datetimepicker(configDate);
@@ -65,6 +66,8 @@ block js
 			{
 				$("#debutformgroup").show();
 				$("#finformgroup").show();
+				$("#nofinformgroup").show();
+				
 				$("#nbWeekBeforeEventgroup").show();
 			}
 
@@ -72,6 +75,8 @@ block js
 			{
 				$("#debutformgroup").hide();
 				$("#finformgroup").hide();
+				$("#nofinformgroup").hide();
+
 				$("#nbWeekBeforeEventgroup").hide();
 			
 			}
@@ -81,11 +86,32 @@ block js
 		$("input[type=radio][name=pubtype]").change(function(){
 			displayDependancy(this.value);
 		});
+
 		displayDependancy(v_pubtype||'announce');
 		if(v_pubtype === '')
 		{
 			$("#announce").prop( "checked", true );
 		}
+
+
+		$('#nofin').change(function() {
+			if ($(this).is(":checked")) {
+				//'checked' event code
+				$("#finformgroup").hide();
+
+				return;
+			}
+			$("#finformgroup").show();
+		});
+
+		if(v_nofin === 'true')
+		{
+			$("#finformgroup").hide();
+			$("#nofin").prop( "checked", true );
+
+		}
+
+
 
 // Si pas de date soumise, alors l'évènement soumis n'est 
 block content
@@ -141,6 +167,12 @@ block content
 									span.glyphicon-calendar.glyphicon
 							input#debut(type='hidden' name='debut')
 
+					.form-group#nofinformgroup
+						label.col-md-4.control-label(for='nofinform') Je ne connais pas l'heure de fin
+						.col-md-4
+							span(style="display:block;float:left;")
+								input(type="hidden", name="nofin", value=0)
+								input#nofin(type='checkbox' name='nofin')
 
 					.form-group#finformgroup
 						label.col-md-4.control-label(for='finform') Fin
@@ -151,7 +183,7 @@ block content
 									span.glyphicon-calendar.glyphicon
 							input#fin(type='hidden' name='fin')
 
-					
+
 					.form-group#nbWeekBeforeEventgroup
 						label.col-md-4.control-label(for='nbWeekBeforeEvent') Nombre de semaine de publication avant l'évènement
 						.col-md-4
@@ -180,7 +212,8 @@ block content
 								.col-md-8
 									ul
 										each publication in data.publications
-											li du #{publication.publication._.debut.format('DD/MM/YYYY')} au #{publication.publication._.fin.format('DD/MM/YYYY')}
+											if publication.publication
+												li du #{publication.publication._.debut.format('DD/MM/YYYY')} au #{publication.publication._.fin.format('DD/MM/YYYY')}
 						else
 							hr
 							.form-group

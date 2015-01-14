@@ -11,21 +11,29 @@ mixin display-announce(announce,categorie)
 		if announce.pubtype === 'event'
 			case categorie.date_display_mode
 				when 'dateheure'
-					if announce._.debut.format('DD/MM') === announce._.fin.format('DD/MM')
-						ul
-							li Le #{announce._.debut.format('DD/MM')} de #{announce._.debut.format('HH:mm')} à #{announce._.debut.format('HH:mm')}
+					if !announce.nofin
+						if announce._.debut.format('DD/MM') === announce._.fin.format('DD/MM')
+							ul
+								li Le #{announce._.debut.format('DD/MM')} de #{announce._.debut.format('HH:mm')} à #{announce._.debut.format('HH:mm')}
+						else
+							ul
+								li Du #{announce._.debut.format('DD/MM HH:mm')}
+								li Au #{announce._.fin.format('DD/MM HH:mm')}
 					else
 						ul
-							li Du #{announce._.debut.format('DD/MM HH:mm')}
-							li Au #{announce._.fin.format('DD/MM HH:mm')}
+							li Le #{announce._.debut.format('DD/MM')} à #{announce._.debut.format('HH:mm')}
 				when 'date'
-					if announce._.debut.format('DD/MM') === announce._.fin.format('DD/MM')
+					if !announce.nofin
+						if announce._.debut.format('DD/MM') === announce._.fin.format('DD/MM')
+							ul
+								li Le #{announce._.debut.format('DD/MM')}
+						else
+							ul
+								li Du #{announce._.debut.format('DD/MM')}
+								li Au #{announce._.fin.format('DD/MM')}
+					else
 						ul
 							li Le #{announce._.debut.format('DD/MM')}
-					else
-						ul
-							li Du #{announce._.debut.format('DD/MM')}
-							li Au #{announce._.fin.format('DD/MM')}
 				when 'pourle'
 					ul
 						li Le #{announce._.debut.format('DD/MM')}
