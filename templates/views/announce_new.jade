@@ -111,6 +111,12 @@ block js
 
 		}
 
+		$("#description").on('keydown', function(event) {
+			var currentString = $("#description").val()
+			$("#counter").html((1000 - currentString.length)+' caractères restant.');
+		});
+});
+
 
 
 // Si pas de date soumise, alors l'évènement soumis n'est 
@@ -131,7 +137,8 @@ block content
 					.form-group
 						label.col-md-4.control-label(for='description') Description
 						.col-md-4
-							textarea#description.form-control(name='description' placeholder='Détail de l\'annonce' style="height:200px; width:600px")= data.announce.description
+							textarea#description.form-control(maxlength='1000' name='description' placeholder='Détail de l\'annonce' style="height:200px; width:600px")= data.announce.description
+							p#counter(style='color:red')
 					
 					//Select Basic 
 					.form-group
