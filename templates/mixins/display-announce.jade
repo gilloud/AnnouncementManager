@@ -14,7 +14,7 @@ mixin display-announce(announce,categorie)
 					if !announce.nofin
 						if announce._.debut.format('DD/MM') === announce._.fin.format('DD/MM')
 							ul
-								li Le #{announce._.debut.format('DD/MM')} de #{announce._.debut.format('HH:mm')} à #{announce._.debut.format('HH:mm')}
+								li Le #{announce._.debut.format('DD/MM')} de #{announce._.debut.format('HH:mm')} à #{announce._.fin.format('HH:mm')}
 						else
 							ul
 								li Du #{announce._.debut.format('DD/MM HH:mm')}
