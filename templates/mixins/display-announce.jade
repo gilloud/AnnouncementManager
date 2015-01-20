@@ -2,7 +2,7 @@ mixin display-announce(announce,categorie)
 	if categorie.date_display_mode === 'anniversaire'
 		p #{announce.title} a son anniversaire le #{announce._.debut.format('DD/MM')}
 	else if  categorie.date_display_mode === 'none'
-		p #{announce.title} #{announce.description}
+		p #{announce.description}
 	else if  categorie.date_display_mode === 'menage'
 		p Merci à #{announce.title} qui fera le ménage pour le #{announce._.debut.format('DD/MM')}.
 	else
