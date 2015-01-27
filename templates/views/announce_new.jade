@@ -14,8 +14,10 @@ block js
 		var v_fin 	= '#{data.announce.fin}';
 		var v_pubtype = '#{data.announce.pubtype}';
 		var v_nofin = '#{data.announce.nofin}';
+		var v_allday = '#{data.announce.allday}';
 
 		var configDate = {language: 'fr',minuteStepping:15};
+
 		$('#finform').datetimepicker(configDate);
 		$('#debutform').datetimepicker(configDate);
 
@@ -69,6 +71,7 @@ block js
 				$("#nofinformgroup").show();
 				
 				$("#nbWeekBeforeEventgroup").show();
+				$("#alldayformgroup").show();
 			}
 
 			if(d === 'announce')
@@ -78,6 +81,7 @@ block js
 				$("#nofinformgroup").hide();
 
 				$("#nbWeekBeforeEventgroup").hide();
+				$("#alldayformgroup").hide();
 			
 			}
 		};
@@ -104,10 +108,29 @@ block js
 			$("#finformgroup").show();
 		});
 
+		$('#allday').change(function() {
+			if ($(this).is(":checked")) {
+				//'checked' event code
+				$("#finformgroup").hide();
+
+				return;
+			}
+			$("#finformgroup").show();
+		});
+
 		if(v_nofin === 'true')
 		{
 			$("#finformgroup").hide();
 			$("#nofin").prop( "checked", true );
+
+		}
+
+		if (v_allday === 'true')
+		{
+			$("#allday").prop( "checked", true );
+		}else
+		{
+						$("#allday").prop( "checked", false );
 
 		}
 
@@ -164,7 +187,14 @@ block content
 									| Evènement (Réunion fixée à une date/heure précise)
 
 
-					//Text input
+					if user.canAccessKeystone
+						.form-group#alldayformgroup
+							label.col-md-4.control-label(for='alldayform') Evènement sur la journée entière
+							.col-md-4
+								span(style="display:block;float:left;")
+									input(type="hidden", name="allday", value=0)
+									input#allday(type='checkbox' name='allday')
+
 					.form-group#debutformgroup
 						label.col-md-4.control-label(for='debutform') Début
 						.col-md-4
@@ -174,12 +204,14 @@ block content
 									span.glyphicon-calendar.glyphicon
 							input#debut(type='hidden' name='debut')
 
-					.form-group#nofinformgroup
-						label.col-md-4.control-label(for='nofinform') Je ne connais pas l'heure de fin
-						.col-md-4
-							span(style="display:block;float:left;")
-								input(type="hidden", name="nofin", value=0)
-								input#nofin(type='checkbox' name='nofin')
+
+					if user.canAccessKeystone
+						.form-group#nofinformgroup
+							label.col-md-4.control-label(for='nofinform') Je ne connais pas l'heure de fin
+							.col-md-4
+								span(style="display:block;float:left;")
+									input(type="hidden", name="nofin", value=0)
+									input#nofin(type='checkbox' name='nofin')
 
 					.form-group#finformgroup
 						label.col-md-4.control-label(for='finform') Fin
@@ -197,7 +229,12 @@ block content
 							select#nbWeekBeforeEvent.form-control(name='nbWeekBeforeEvent')
 								each week in data.nbWeekBeforeEvent
 									option(value='#{week.key}' selected=data.announce.nbWeekBeforeEvent == week.key) #{week.value}
-									
+
+					//.form-group#attachementformgroup
+					//	label.col-md-4.control-label(for='attachementformgroup') Fichier joint
+					//	.col-md-4
+					//		input#attachment(type='file' name='attachment')
+
 					//Button 
 					.form-group
 						label.col-md-4.control-label(for='submit')
@@ -226,7 +263,7 @@ block content
 							.form-group
 								label.col-md-8.control-label(for='nbWeekBeforeEvent') Annonce pas encore publiée
 
-			if user.isAdmin
+			if user.canAccessKeystone
 				hr
 				p #{data.announce}
 

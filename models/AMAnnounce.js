@@ -22,7 +22,9 @@ Announce.add({
 	nbWeekBeforeEvent : { type: Types.Number, initial: true, required: false },
 	publishFrom : { type: Types.Date, initial: true, required: false },
 	pubtype : {type : Types.Select, options: 'event, announce', default: 'event', index: true},
-	announcePublished: { type: Boolean, label: 'Is announce published ?', index: true ,default: false}
+	announcePublished: { type: Boolean, label: 'Is announce published ?', index: true ,default: false},
+allday: { type: Boolean, label: 'Evènement sur la journée', index: false ,default: false}
+	//attachement : { type: Types.LocalFile ,dest: process.env.attachement_store , prefix: '/files/' }
 
 });
 

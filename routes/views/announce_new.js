@@ -1,8 +1,8 @@
 var keystone = require('keystone'),
 async = require('async'),
 AMAnnounce = keystone.list('AMAnnounce'),
-moment = require('moment');
-
+moment = require('moment'),
+//fs = require('fs');
 
 exports = module.exports = function(req, res) {
 	
@@ -22,6 +22,7 @@ exports = module.exports = function(req, res) {
 		announce : []
 	};
 	locals.formData = req.body || {};
+	locals.filesData = req.files || {};
 
 	
 	view.on('init',function(next){
@@ -125,6 +126,20 @@ exports = module.exports = function(req, res) {
 			var newAMAnnounce = new AMAnnounce.model(locals.formData);
 
 			newAMAnnounce.save(function(err,announce) {
+
+				//var tmp_path = locals.filesData.attachment.path;
+				// set where the file should actually exists - in this case it is in the "images" directory
+				//var target_path = process.env.attachement_store + locals.filesData.attachment.name;
+				// move the file from the temporary location to the intended location
+				//fs.rename(tmp_path, target_path, function(err) {
+				//	if (err) throw err;
+					// delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+				//	fs.unlink(tmp_path, function() {
+				//		if (err) throw err;
+				//		console.log('File uploaded to: ' + target_path + ' - ' + locals.filesData.attachment.size + ' bytes');
+				//	});
+				//});
+
 				return res.redirect('/announce/'+announce.id);
 			});
 
