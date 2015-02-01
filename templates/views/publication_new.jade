@@ -57,7 +57,7 @@ block js
 
 		//Ajout
 		$("#debutform").on("dp.change",function (ef) {
-			var newenddate = moment(ef.date).add(6,'days');
+			var newenddate = moment(ef.date).add(7,'days');
 			$('#finform').data("DateTimePicker").setMinDate(ef.date);
 			$('#finform').data("DateTimePicker").setDate(newenddate);
 
