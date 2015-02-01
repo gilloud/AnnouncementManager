@@ -4,7 +4,7 @@ mixin display-announce(announce,categorie)
 	else if  categorie.date_display_mode === 'none'
 		p #{announce.description}
 	else if  categorie.date_display_mode === 'menage'
-		p Merci à #{announce.title} qui fera le ménage pour le #{announce._.debut.format('DD/MM')}.
+		p Merci à #{announce.title} qui feront le ménage pour le #{announce._.debut.format('DD/MM')}.
 	else
 		if announce.title !== ''
 			b #{announce.title}
