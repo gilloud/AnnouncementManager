@@ -43,6 +43,7 @@ exports = module.exports = function(app) {
 	app.all('/contact', routes.views.contact);
 	app.all('/announce/new', middleware.requireUser,routes.views.announce_new);
 	app.all('/announce/:announceid', middleware.requireUser, routes.views.announce_new);
+	app.all('/announcedelete/:announceid',middleware.requireUser, routes.views.announcedelete);
 	app.get('/announces/:category?', middleware.requireUser, routes.views.announces);
 	app.get('/publications',middleware.requireAdmin,routes.views.publications);
 	app.all('/publication/new',middleware.requireAdmin,routes.views.publication_new);

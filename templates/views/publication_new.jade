@@ -145,7 +145,11 @@ block content
 										i: span  #{announce.author.getFullName} | 
 										span.glyphicon.glyphicon-share-alt 
 										a(href='/announce/#{announce.id}') 
-											span Aller a l'annonce
+											span Aller a l'annonce 
+										i: span  | 
+										span(class="glyphicon glyphicon-trash")
+										a(href="#"  onclick="if (confirm('Supprimer ?')) window.location='/announcedelete/#{announce.id}'; return false")
+											span Supprimer l'annonce
 										a(href="javascript:addremove('add','#{data.publication.id}','#{announce.id}')" id='link_add_#{announce.id}')
 											span(class="badge pull-right")
 												span(class="glyphicon glyphicon-ok")

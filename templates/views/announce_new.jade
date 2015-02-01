@@ -138,6 +138,15 @@ block js
 			var currentString = $("#description").val()
 			$("#counter").html((1000 - currentString.length)+' caractères restant.');
 		});
+
+		areyousure = function(id)
+		{
+			if (confirm("Voulez-vous vraiment supprimer cette annonce ?")) { // Clic sur OK
+				document.location.href= "deleteannounce/"+id;
+			}else{
+			return false;
+			}
+		}
 });
 
 
@@ -242,6 +251,11 @@ block content
 							button#submitbtn.btn.btn-success(name='submit') 
 								span.glyphicon.glyphicon-bullhorn &nbsp;
 								span Soumettre
+							if data.announce.id
+								a(href="#"  onclick="if (confirm('Supprimer ?')) window.location='/announcedelete/#{data.announce.id}'; return false")
+									button.btn.btn-danger
+										span.glyphicon.glyphicon-trash &nbsp;
+										span Supprimer
 
 					if data.announce.id
 						.form-group
