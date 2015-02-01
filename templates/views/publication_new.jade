@@ -62,13 +62,19 @@ block js
 			$('#finform').data("DateTimePicker").setDate(newenddate);
 
 			$('#debut').val($('#debutform').data("DateTimePicker").getDate());
+			document.getElementById('pagemodified').hidden = false;
+
 		});
 
 		//mise dans la variable cachée des infos
 		$("#finform").on("dp.change",function (ef) {
-
-		$('#fin').val($('#finform').data("DateTimePicker").getDate());
+			$('#fin').val($('#finform').data("DateTimePicker").getDate());
+			document.getElementById('pagemodified').hidden = false;
 		});
+
+		$('#description').on("change keyup paste",function(c){
+			document.getElementById('pagemodified').hidden = false;
+		})
 
 
 block content
@@ -81,6 +87,8 @@ block content
 						legend Mettre à jour une publication
 					else
 						legend Créer une publication
+
+					div(class="alert alert-warning" role="alert" id='pagemodified' hidden='true') Page modifiée, merci de sauvegarder avant de quitter !
 
 
 					//Text input
