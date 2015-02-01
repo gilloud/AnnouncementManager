@@ -142,8 +142,8 @@ exports = module.exports = function(req, res) {
 			});
 			transporter.sendMail({
 				from: locals.user.name.first+' '+locals.user.name.last+' <annonces@epe-drac.fr>',
-				to: 'gilles@pilloud.fr',
-				cc: locals.user.email+',gilles@pilloud.fr',
+				to: 'apegs@googlegroups.com',
+				cc: locals.user.email,
 				subject: 'Annonces de la période du '+locals.data.publication._.debut.format('DD/MM/YYYY')+' au '+locals.data.publication._.fin.format('DD/MM/YYYY'),
 				generateTextFromHTML: true,
 				html: locals.data.renderedMail
