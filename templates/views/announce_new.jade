@@ -174,7 +174,6 @@ block content
 					.form-group
 						label.col-md-4.control-label(for='description') Description
 						.col-md-4
-							p #{user.canAccessKeystone}
 							if user.canAccessKeystone
 								textarea#description.form-control(name='description' placeholder='Détail de l\'annonce' style="height:200px; width:600px")= data.announce.description
 							else
