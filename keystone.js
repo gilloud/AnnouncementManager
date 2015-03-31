@@ -27,7 +27,8 @@ keystone.init({
 	'auth': true,
 	'user model': 'User',
 	'cookie secret': 'u2Q4l66[DSmQCf2papc_Ugn&r|XWR5g?)XsXNqpDb~,S7o$^>kSlG]E`UsN9r52+',
-	'signin logo' : '/images/eped.png'
+	'signin logo' : '/images/eped.png',
+	'api_secret' : '123'
 
 });
 
@@ -46,6 +47,7 @@ keystone.set('locals', {
 	editable: keystone.content.editable
 });
 
+keystone.set('cloudinary config', { cloud_name: 'my-cloud', api_key: 'abc', api_secret: '123' });
 // Load your project's Routes
 
 keystone.set('routes', require('./routes'));

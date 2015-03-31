@@ -15,6 +15,7 @@ block js
 		var v_pubtype = '#{data.announce.pubtype}';
 		var v_nofin = '#{data.announce.nofin}';
 		var v_allday = '#{data.announce.allday}';
+		var v_isAdmin = '#{user.isAdminAnnounceManager}';
 
 		var configDate = {language: 'fr',minuteStepping:15};
 
@@ -134,10 +135,14 @@ block js
 
 		}
 
-		$("#description").on('keydown', function(event) {
+		if(v_isAdmin)
+		{
+			$("#description").on('keydown', function(event) 
+			{
 			var currentString = $("#description").val()
 			$("#counter").html((1000 - currentString.length)+' caractères restant.');
-		});
+			});
+		}
 
 		areyousure = function(id)
 		{
@@ -169,8 +174,12 @@ block content
 					.form-group
 						label.col-md-4.control-label(for='description') Description
 						.col-md-4
-							textarea#description.form-control(maxlength='1000' name='description' placeholder='Détail de l\'annonce' style="height:200px; width:600px")= data.announce.description
-							p#counter(style='color:red')
+							p #{user.canAccessKeystone}
+							if user.canAccessKeystone
+								textarea#description.form-control(name='description' placeholder='Détail de l\'annonce' style="height:200px; width:600px")= data.announce.description
+							else
+								textarea#description.form-control(maxlength='1000' name='description' placeholder='Détail de l\'annonce' style="height:200px; width:600px")= data.announce.description
+								p#counter(style='color:red')
 					
 					//Select Basic 
 					.form-group
@@ -178,7 +187,7 @@ block content
 						.col-md-4
 							select#categorie.form-control(name='categorie')
 								each category in data.AMCategory
-									if category.for_all || user.isAdminAnnounceManager
+									if category.for_all || user.canAccessKeystone
 										option(value='#{category._id}' selected=data.announce.categorie == category.id) #{category.name}
 											if category.description
 												|  (#{category.description})
