@@ -2,6 +2,10 @@ var keystone = require('keystone'),
 async = require('async'),
 AMAnnounce = keystone.list('AMAnnounce'),
 moment = require('moment'),
+nodemailer = require("nodemailer"),
+smtpTransport = require('nodemailer-smtp-transport');
+
+
 //fs = require('fs');
 
 exports = module.exports = function(req, res) {
@@ -24,6 +28,17 @@ exports = module.exports = function(req, res) {
 	locals.formData = req.body || {};
 	locals.filesData = req.files || {};
 
+	var transporter = nodemailer.createTransport(smtpTransport({
+		host: process.env.MAIL_SMTP,
+		port: process.env.MAIL_PORT,
+		auth: {
+			user: process.env.MAIL_USER,
+			pass: process.env.MAIL_PASSWORD
+
+		},
+		secureConnection: false ,
+		debug:true
+	}));
 	
 	view.on('init',function(next){
 
@@ -108,6 +123,9 @@ exports = module.exports = function(req, res) {
 		}
 
 
+		
+
+		
 
 		if("id" in locals.formData )
 		{
@@ -116,36 +134,78 @@ exports = module.exports = function(req, res) {
 			delete locals.formData.id;
 
 			keystone.list('AMAnnounce').model.update({'_id': id}, locals.formData).exec(function(err, numAffected, c) {
+
+				/* Envoi d'un mail au soumetteur + responsable */
+				transporter.sendMail({
+					from: 'EpedAnnonce <annonces@epe-drac.fr>',
+					to: 'gilles@pilloud.fr;'+locals.user.email,
+					subject: 'Annonce mise à jour : '+locals.data.title,
+					generateTextFromHTML: true,
+					html: 'Bonjour,<br /> Une annonce a été mise à jour. Voici son récapituatif :<br />'
+					+ 'Auteur : '+locals.user.name.first+' '+locals.user.name.last+'<br />'
+					+ 'Titre :'+locals.formData.title+'<br />'
+					+ 'Description :'+locals.formData.description+'<br />'
+					+ '<a href="'+'http://annonces.epe-drac.fr/announce/'+id+'">Voir les détails</a>'
+				}, function(error, info){
+					if(error){
+						console.log(error);
+					}else{
+						console.log('Message sent: ' + info.response);
+					}
+				});
+
 				return res.redirect('/announce/'+id);
 
 			});
 		}
 		else
 		{
-			console.log('insert');
-			var newAMAnnounce = new AMAnnounce.model(locals.formData);
+			console.log('insert',locals.formData);
 
-			newAMAnnounce.save(function(err,announce) {
+			var newAnnounce = new AMAnnounce.model({
+			author: locals.user.id,
+			publishedDate: new Date()
+		}),
+		updater = newAnnounce.getUpdateHandler(req, res, {
+			errorMessage: 'There was an error creating your new post:'
+		});
 
-				//var tmp_path = locals.filesData.attachment.path;
-				// set where the file should actually exists - in this case it is in the "images" directory
-				//var target_path = process.env.attachement_store + locals.filesData.attachment.name;
-				// move the file from the temporary location to the intended location
-				//fs.rename(tmp_path, target_path, function(err) {
-				//	if (err) throw err;
-					// delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-				//	fs.unlink(tmp_path, function() {
-				//		if (err) throw err;
-				//		console.log('File uploaded to: ' + target_path + ' - ' + locals.filesData.attachment.size + ' bytes');
-				//	});
-				//});
+		updater.process(req.body, {
+			flashErrors: true,
+			logErrors: true,
+			fields: ''
+		}, function(err) {
+			if (err) {
+				locals.validationErrors = err.errors;
+			} else {
+				
+				/* Envoi d'un mail au soumetteur + responsable */
+				transporter.sendMail({
+					from: 'EpedAnnonce <annonces@epe-drac.fr>',
+					to: 'gilles@pilloud.fr'+locals.user.email,
+					subject: 'Une nouvelle annonce a été soumise : '+locals.data.title,
+					generateTextFromHTML: true,
+					html: 'Bonjour,<br /> Une nouvelle annonce a été soumise. Voici son récapituatif :<br />'
+					+'Auteur : '+locals.user.name.first+' '+locals.user.name.last+'<br />'
+					+ 'Titre :'+locals.formData.title+'<br />'
+					+ 'Description :'+locals.formData.description+'<br />'
+					+ '<a href="'+'http://annonces.epe-drac.fr/announce/'+newAnnounce.id+'">Voir les détails</a>'
+				}, function(error, info){
+					if(error){
+						console.log(error);
+					}else{
+						console.log('Message sent: ' + info.response);
+					}
+				});
+				return res.redirect('/announce/'+newAnnounce.id);
+				
+			}
+			next();
+		});
 
-				return res.redirect('/announce/'+announce.id);
-			});
+}
+});
 
-		}
-	});
-	
 	// Render the view
 	view.render('announce_new');
 	
