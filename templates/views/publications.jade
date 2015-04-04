@@ -6,10 +6,10 @@ block content
 	.container: .row
 		.col-sm-12.col-md-12
 			h2 Publications en cours et autres publications effectuées
-			if data.nonsentpublications.length == 0
-				center
-					a(href='/publication/new')
-						button.btn.btn-primary Créer une publication
+			//if data.nonsentpublications.length == 0
+			center
+				a(href='/publication/new')
+					button.btn.btn-primary Créer une publication
 			if data.nonsentpublications.length > 0
 				h3 Publications non-envoyées
 				br

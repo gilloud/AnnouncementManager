@@ -176,15 +176,21 @@ exports = module.exports = function(req, res) {
 					locals.formData.announces.push(results[i].id);
 					console.log('id', results[i].id);
 				}
-				//locals.formData.announces = results;
-				console.log('locals.formData.announces', locals.formData.announces);
+				var newAMPublication = new AMPublication.model();
 
-				var newAMPublication = new AMPublication.model(locals.formData);
-
-				newAMPublication.save(function(err, publication) {
-					console.log(err);
-					return res.redirect('/publication/' + publication.id);
+				updater = newAMPublication.getUpdateHandler(req, res, {
+					errorMessage: 'There was an error creating your new ponublicati:'
 				});
+
+				updater.process(req.body, {
+					flashErrors: true,
+					logErrors: true,
+					fields: ''
+				}, function(err) {
+					return res.redirect('/publication/' + newAMPublication.id);
+
+							});
+
 			});
 
 
